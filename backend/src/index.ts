@@ -1,6 +1,8 @@
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import { UserManager } from "./managers/UserManager.js";
+import type { Socket } from "socket.io";
 
 const app = express();
 
@@ -12,18 +14,16 @@ const io = new Server(httpServer, {
   },
 });
 
-io.on("connection", (socket) => {
-  console.log("User connected:", socket.id);
+const userManager = new UserManager();
 
-  socket.on("message", (message) => {
-    console.log("Message:", message);
+io.on("connection", (socket:Socket) => {
+  console.log("User connected");
 
-    // Send message to everyone
-    io.emit("message", message);
-  });
+  userManager.addUser("randomUser",socket);
 
   socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
+    userManager.removeUser(socket.id);
+    console.log("User disconnected");
   });
 });
 
