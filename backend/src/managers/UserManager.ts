@@ -36,8 +36,8 @@ export class UserManager {
     }
 
     clearQueue(){
-        console.log("Inside clrea queues")
-        console.log(this.queue.length);
+        // console.log("Inside clrea queues")
+        // console.log(this.queue.length);
         if(this.queue.length < 2){
             return;
         }
@@ -48,8 +48,8 @@ export class UserManager {
         const user1 = this.users.find(x => x.socket.id === id1);
         const user2 = this.users.find(x => x.socket.id === id2);
 
-        console.log(user1);
-        console.log(user2);
+        // console.log(user1);
+        // console.log(user2);
 
         if(!user1 || !user2){
             return;
@@ -64,12 +64,16 @@ export class UserManager {
     initHandler(socket: Socket){
         socket.on("offer",({sdp,roomId}: {sdp:string, roomId:string}) => {
             console.log("offer received")
-            this.roomManager.onOffer(roomId,sdp)
+            this.roomManager.onOffer(roomId,sdp,socket.id)
         })
 
         socket.on("answer",({sdp,roomId}: {sdp:string, roomId:string}) => {
             console.log("answer received");
-            this.roomManager.onAnswer(roomId,sdp)
+            this.roomManager.onAnswer(roomId,sdp,socket.id)
+        })
+
+        socket.on("add-ice-candidate", ({candidate,roomId,type}) => {
+            this.roomManager.onIceCandidate(roomId,socket.id,candidate,type)
         })
     }
 }
